@@ -26,10 +26,23 @@ class Player:
 
 
 if __name__ == '__main__':
-    pathToTestFile = './wav_files/test.wav'
-    pathToFillers = './wav_files/filler/'
-    play = Player(currentAudioPath=None)
-    print('Playing test file')
-    play.playWav(pathToWav=pathToTestFile)
-    print('Playing random filler file')
-    play.playRandom(pathToFillerDir=pathToFillers)
+	import sys
+
+	print ('Number of arguments:', len(sys.argv), 'arguments.')
+	print ('Argument List:', str(sys.argv))
+	if len(sys.argv) > 1 :
+		print ("test")
+		pathToTestFile = sys.argv[1]
+		print (str(pathToTestFile))
+		play = Player(currentAudioPath=None)
+		play.playWav(pathToWav=pathToTestFile)
+		
+	else: 
+		print ("other test")
+		pathToTestFile = './wav_files/test.wav'
+		pathToFillers = './wav_files/filler/'
+		play = Player(currentAudioPath=None)
+		print('Playing test file')
+		play.playWav(pathToWav=pathToTestFile)
+		print('Playing random filler file')
+		play.playRandom(pathToFillerDir=pathToFillers)
