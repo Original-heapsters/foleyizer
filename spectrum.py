@@ -1,7 +1,3 @@
-"""Plots
-Time in MS Vs Amplitude in DB of a input wav signal
-"""
-
 import numpy
 import matplotlib.pyplot as plt
 import pylab
@@ -9,13 +5,14 @@ from scipy.io import wavfile
 from scipy.fftpack import fft
 
 
-myAudio = "audio.wav"
+myAudio = "wav_files/jg_audio.wav"
 
 #Read file and get sampling freq [ usually 44100 Hz ]  and sound object
 samplingFreq, mySound = wavfile.read(myAudio)
 
 #Check if wave file is 16bit or 32 bit. 24bit is not supported
 mySoundDataType = mySound.dtype
+print(mySoundDataType)
 
 #We can convert our sound array to floating point values ranging from -1 to 1 as follows
 
@@ -31,6 +28,8 @@ signalDuration =  mySound.shape[0] / samplingFreq
 
 #If two channels, then select only one channel
 mySoundOneChannel = mySound[:,0]
+
+
 
 #Plotting the tone
 
