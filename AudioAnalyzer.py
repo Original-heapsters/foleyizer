@@ -8,54 +8,64 @@ class AudioAnalyzer:
 
     def findDeadAreas(self):
         dummyJson = {
-        'path':'./wav_files/africa-toto.wav',
-        'title':'africa-toto.wav',
-        'length': 240.0,
+        'path':'./wav_files/badness.wav',
+        'title':'badness.wav',
+        'length': 25.1827,
         'sections':[
         {
         'isDead':False,
         'start':0.0,
-        'end':10.2
+        'end':1.702
         },
         {
         'isDead':True,
-        'start':10.2,
-        'end':20.3
+        'start':1.702,
+        'end':2.037
         },
         {
         'isDead':False,
-        'start':20.3,
-        'end':40.2
+        'start':2.037,
+        'end':2.5
         },
         {
         'isDead':True,
-        'start':40.2,
-        'end':90.2
+        'start':2.5,
+        'end':3.0
         },
         {
         'isDead':False,
-        'start':90.2,
-        'end':100.9
+        'start':3.0,
+        'end':9.7
         },
         {
         'isDead':True,
-        'start':100.9,
-        'end':101.0
+        'start':9.7,
+        'end':14.0
         },
         {
         'isDead':False,
-        'start':101.0,
-        'end':102.5
+        'start':14.0,
+        'end':20.5
         },
         {
         'isDead':True,
-        'start':102.5,
-        'end':150.0
+        'start':20.5,
+        'end':21.5
+        },
+        {
+        'isDead':False,
+        'start':21.5,
+        'end':22.5
         },
         {
         'isDead':True,
-        'start':150.0,
-        'end':240.0
+        'start':22.5,
+        'end':24.0
+        },
+        {
+        'isDead':False,
+        'start':24.0,
+        'end':25.1827
         }
         ]
         }
@@ -63,13 +73,14 @@ class AudioAnalyzer:
         for k,v in dummyJson.items():
             if k == 'sections':
                 for section in dummyJson[k]:
-                    # print('The audio is dead: ' + str(section['isDead']) + ' starts at: ' + str(section['start']) + ' ends at: ' + str(section['end']))
-                    duration = int(round(section['end'] - section['start']))
-                    # print('Duration is ' + str(duration))
-                    fillerChosen, iterations = self.findFittingFiller(desiredDuration=duration)
+                    if section['isDead']:
+                        # print('The audio is dead: ' + str(section['isDead']) + ' starts at: ' + str(section['start']) + ' ends at: ' + str(section['end']))
+                        duration = int(round(section['end'] - section['start']))
+                        # print('Duration is ' + str(duration))
+                        fillerChosen, iterations = self.findFittingFiller(desiredDuration=duration)
 
-                    print('Decided to play ' + fillerChosen + ' x' + str(iterations) + ' To fill ' + str(duration) + ' starting at ' + str(section['start']))
-                    finalMix = self.play.combineAudioFiles(src=finalMix, filler=fillerChosen, offset=section['start'])
+                        print('Decided to play ' + fillerChosen + ' x' + str(iterations) + ' To fill ' + str(duration) + ' starting at ' + str(section['start']))
+                        finalMix = self.play.combineAudioFiles(src=finalMix, filler=fillerChosen, offset=section['start'])
         self.play.playWav(pathToWav=finalMix)
 
 
