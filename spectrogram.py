@@ -6,20 +6,20 @@ from scipy.fftpack import fft
 
 class Spectogram:
     def __init__(self):
-    	return
+        return
 
     def chooseWav(self, pathToWav=None):
-    	if pathToWav is not None and pathToWav != '':
-        return myAudio = pathToWav
-    	else:
-    		return None
-    	
+        if pathToWav is not None and pathToWav != '':
+            return myAudio == pathToWav
+        else:
+            return None
+
 ##myAudio = "wav_files/test.wav"
     def graphSetting(self, myAudio):
-    	if myAudio:
-    		samplingFreq, mySound = wavfile.read(myAudio)
-    		mySoundDataType = mySound.dtype
-    		mySoundDataType = mySound.dtype
+        if myAudio:
+            samplingFreq, mySound = wavfile.read(myAudio)
+            mySoundDataType = mySound.dtype
+            mySoundDataType = mySound.dtype
             print(mySoundDataType)
             mySound = mySound / (2.**15)
             mySoundShape = mySound.shape
@@ -27,12 +27,12 @@ class Spectogram:
             return mySound, samplePoints
 
     def fileDuration(self, mySound, samplingFreq):
-    	if mySound and samplingFreq:
-    	    signalDuration = mySound.shape[0]/samplingFreq
+        if mySound and samplingFreq:
+            signalDuration = mySound.shape[0]/samplingFreq
 
     def soundChannel(self, mySound):
-    	if mySound:
-    	    if len(mySound.shape) > 1:
+        if mySound:
+            if len(mySound.shape) > 1:
                 mySoundOneChannel = mySound[:,0]
             else:
                 mySoundOneChannel = mySound
@@ -68,15 +68,15 @@ class Spectogram:
 
 
     def plotTime(self, samplePoints,samplingFreq, mySoundOneChannel):
-    	if samplePoints and samplingFreq and mySoundOneChannel:
+        if samplePoints and samplingFreq and mySoundOneChannel:
             timeArray = numpy.arange(0,samplePoints,1)
             timeArray = timeArray / samplingFreq
             timeArray = timeArray * 1000
             return timeArray
 
     def plotTone(self, timeArray, mySoundOneChannel):
-    	if timeArray and mySoundOneChannel:
-    		#Plot the tone
+        if timeArray and mySoundOneChannel:
+            #Plot the tone
             plt.plot(timeArray, mySoundOneChannel, color='G')
             plt.xlabel('Time (ms)')
             plt.ylabel('Amplitude')
@@ -104,8 +104,8 @@ class Spectogram:
 ##plt.savefig('plot.png', dpi=100)
 ##plt.show()
 
-   def freqCont(self, mySound, mySoundOneChannel):
-       if mySound, mySoundOneChannel:
+    def freqCont(self, mySound, mySoundOneChannel):
+       if mySound and mySoundOneChannel:
             mySoundLength = len(mySound)
             fftArray = fft(mySoundOneChannel)
             numUniquePoints = numpy.ceil((mySoundLength + 1) / 2.0)
@@ -117,22 +117,22 @@ class Spectogram:
                 fftArray[1:len(fftArray)] = fftArray[1:len(fftArray)] * 2
 
             else: #We've got even number of points in fft
-                fftArray[1:len(fftArray) -1] = fftArray[1:len(fftArray) -1] * 2  
+                fftArray[1:len(fftArray) -1] = fftArray[1:len(fftArray) -1] * 2
 
             freqArray = numpy.arange(0, numUniquePoints, 1.0) * (samplingFreq / mySoundLength);
             return freqArray
 
     def plotFreq(self, fftArray, freqArray):
-    	if fftArray and freqArray:
-    		#Plot the frequency
+        if fftArray and freqArray:
+            #Plot the frequency
             plt.plot(freqArray/1000, 10 * numpy.log10 (fftArray), color='B')
             plt.xlabel('Frequency (Khz)')
             plt.ylabel('Power (dB)')
             lt.show()
 
     def freqAr(self, freqArray):
-    	if freqArray:
-    	    #Get List of element in frequency array
+        if freqArray:
+            #Get List of element in frequency array
             #print freqArray.dtype.type
             freqArrayLength = len(freqArray)
             print ("freqArrayLength =", freqArrayLength)
@@ -148,7 +148,7 @@ class Spectogram:
 #Get length of mySound object array
 ##mySoundLength = len(mySound)
 
-#Take the Fourier transformation on given sample point 
+#Take the Fourier transformation on given sample point
 #fftArray = fft(mySound)
 ##fftArray = fft(mySoundOneChannel)
 
@@ -174,7 +174,7 @@ class Spectogram:
 ##    fftArray[1:len(fftArray)] = fftArray[1:len(fftArray)] * 2
 
 ##else: #We've got even number of points in fft
-##    fftArray[1:len(fftArray) -1] = fftArray[1:len(fftArray) -1] * 2  
+##    fftArray[1:len(fftArray) -1] = fftArray[1:len(fftArray) -1] * 2
 
 ##freqArray = numpy.arange(0, numUniquePoints, 1.0) * (samplingFreq / mySoundLength);
 
@@ -196,7 +196,4 @@ class Spectogram:
 
 
 if __name__ == '__main__':
-
-
-
-
+    print('Big booty hoes')
