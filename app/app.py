@@ -67,8 +67,8 @@ def testPlayer():
 def testAudioAnalyzer():
     #Do foleyizing then redirect to finish page when complete, will show spectrogram and show foleyized audio player
     original = os.path.join(app.config['WAV_FOLDER'], 'badness.wav')
-    mixed = app.config['ANALYZER'].findDeadAreas(altPath=original, outDir=app.config['WAV_FOLDER'])
-    return render_template('analysis.html', original_audio=original, mixed_audio=mixed)
+    mixed, original_audio = app.config['ANALYZER'].findDeadAreas(altPath=original, outDir=app.config['WAV_FOLDER'])
+    return render_template('analysis.html', original_audio=original_audio, mixed_audio=mixed)
 
 
 def allowed_file(filename):

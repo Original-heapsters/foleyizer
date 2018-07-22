@@ -105,7 +105,7 @@ class AudioAnalyzer:
         filterCommand += '[0]' + allLetters + 'amix=' + str(counter) + '\" -ar 44100 ' + finalMix
         os.system(audioCombinationCommand + filterCommand)
 
-        return finalMix
+        return finalMix, originalAudio
 
     def playMix(self, mixPath=None):
         self.play.playWav(pathToWav=mixPath)
