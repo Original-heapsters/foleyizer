@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Foleyizer</title>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <div class=header>
+      <div class=container>
+        <h1 class=header-heading>Foleyizer</h1>
+      </div>
+    </div>
+    <div class=nav-bar>
+      <div class=container>
+        <ul class=nav>
+          <li><a href="{{ url_for('index') }}">Home</a></li>
+          <li><a href="{{ url_for('upload') }}">Upload New Audio</a></li>
+          <li><a href="{{ url_for('testPlayer') }}">Test the player class</a></li>
+          <li><a href="{{ url_for('testAudioAnalyzer') }}">Test the Audio Analyzer class</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class=content>
+      {% block body %}
+      {% endblock %}
+    </div>
+  </body>
+  <div class=footer>
+    <div class=container>
+      &copy; Copyright 2018
+    </div>
+  </div>
+</html>
