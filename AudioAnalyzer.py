@@ -69,7 +69,10 @@ class AudioAnalyzer:
         }
         ]
         }
-        finalMix = dummyJson['path']
+        originalAudio = dummyJson['path']
+        finalMix = None
+        intermediateMixes = []
+        counter = 0
         for k,v in dummyJson.items():
             if k == 'sections':
                 for section in dummyJson[k]:
@@ -80,7 +83,10 @@ class AudioAnalyzer:
                         fillerChosen, iterations = self.findFittingFiller(desiredDuration=duration)
 
                         print('Decided to play ' + fillerChosen + ' x' + str(iterations) + ' To fill ' + str(duration) + ' starting at ' + str(section['start']))
-                        finalMix = self.play.combineAudioFiles(src=finalMix, filler=fillerChosen, offset=section['start'])
+                        intermediateMixes.append((fillerChosen,section['start']))
+                        counter += 1
+
+        finalMix = self.play.combineAudioFiles(src=originalAudio, fillersWithOffsets=intermediateMixes)
         self.play.playWav(pathToWav=finalMix)
 
 
@@ -91,7 +97,7 @@ class AudioAnalyzer:
         selectedFile = None
         for fi in fillers:
             print('.')
-            if desiredDuration > 0 and self.getLengthOfAudio(pathToAudio=fi) % desiredDuration == 0:
+            if desiredDuration > 0 and int(round(self.play.getWavLength(pathToWav=fi))) % desiredDuration == 0:
                 print('Found it! ' + fi)
                 selectedFile = fi
                 break
