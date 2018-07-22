@@ -1,1 +1,3 @@
+*.pyc
 wav_files/mixed_audio.wav
+app/static/wav_files/mixed_audio.wav

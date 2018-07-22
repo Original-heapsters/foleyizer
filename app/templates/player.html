@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block body %}
+<div>
+  <h2>Randomly selected audio</h2>
+  <audio controls>
+    <source src="{{random_audio}}" type="audio/wav">
+  Your browser does not support the audio element.
+  </audio>
+</div>
+
+<h2>All Fillers</h2>
+{% for filler in fillerFiles %}
+  <div>
+    <br>
+    <p>{{filler}}</p>
+    <audio controls>
+      <source src="{{filler}}" type="audio/wav">
+    Your browser does not support the audio element.
+    </audio>
+  </div>
+{% endfor %}
+{% endblock %}
