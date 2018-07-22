@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block body %}
+<audio controls>
+  <source src="{{original_audio}}" type="audio/wav">
+Your browser does not support the audio element.
+</audio>
+<br>
+<audio controls>
+  <source src="{{mixed_audio}}" type="audio/wav">
+Your browser does not support the audio element.
+</audio>
+{% endblock %}

@@ -1,5 +1,6 @@
 import os
 from scripts.player import Player
+from scripts.AudioAnalyzer import AudioAnalyzer
 from flask import Flask,render_template, url_for, flash, request, redirect
 from werkzeug.utils import secure_filename
 
@@ -15,6 +16,7 @@ app.config['LOG_FOLDER'] = LOG_FOLDER
 app.config['WAV_FOLDER'] = WAV_FOLDER
 app.config['SCRIPT_FOLDER'] = SCRIPT_FOLDER
 app.config['PLAYER'] = Player()
+app.config['ANALYZER'] = AudioAnalyzer()
 
 os.system('mkdir -p ' + app.config['LOG_FOLDER'])
 os.system('mkdir -p ' + app.config['UPLOAD_FOLDER'])
@@ -22,7 +24,6 @@ os.system('mkdir -p ' + app.config['UPLOAD_FOLDER'])
 @app.route('/')
 @app.route('/index')
 def index():
-    app.config['PLAYER'].playWav(app.config['WAV_FOLDER'] + '/test.wav')
     return render_template('index.html')
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -53,6 +54,21 @@ def foleyizing():
         audioFile = os.path.join(app.config['UPLOAD_FOLDER'], request.args.get('filename', None))
         app.config['PLAYER'].playWav(audioFile)
     return render_template('loading.html')
+
+@app.route('/testPlayer')
+def testPlayer():
+    #Do foleyizing then redirect to finish page when complete, will show spectrogram and show foleyized audio player
+    audioFillerDir = os.path.join(app.config['WAV_FOLDER'], 'filler')
+
+    randomFile = app.config['PLAYER'].playRandom(pathToFillerDir=audioFillerDir)
+    return render_template('player.html', random_audio=randomFile)
+
+@app.route('/testAudioAnalyzer')
+def testAudioAnalyzer():
+    #Do foleyizing then redirect to finish page when complete, will show spectrogram and show foleyized audio player
+    original = os.path.join(app.config['WAV_FOLDER'], 'badness.wav')
+    mixed = app.config['ANALYZER'].findDeadAreas(altPath=original, outDir=app.config['WAV_FOLDER'])
+    return render_template('analysis.html', original_audio=original, mixed_audio=mixed)
 
 
 def allowed_file(filename):

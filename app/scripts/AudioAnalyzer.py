@@ -1,13 +1,13 @@
 import os
 import random
-from player import Player
+from .player import Player
 
 class AudioAnalyzer:
     def __init__(self, play=None):
         self.play = Player()
         return
 
-    def findDeadAreas(self, inputJson=None):
+    def findDeadAreas(self, inputJson=None, altPath=None, outDir=None):
         dummyJson = {
         'path':'./wav_files/badness.wav',
         'title':'badness.wav',
@@ -76,7 +76,10 @@ class AudioAnalyzer:
         else:
             analysisJson = inputJson
 
-        originalAudio = analysisJson['path']
+        if not altPath:
+            originalAudio = analysisJson['path']
+        else:
+            originalAudio = altPath
         audioCombinationCommand = 'ffmpeg -y -loglevel panic -i ' + originalAudio + ' '
         filterCommand = '-filter_complex \"'
         finalMix = None
@@ -84,7 +87,7 @@ class AudioAnalyzer:
         counter = 1
         startingLetter = 'b'
         allLetters = ''
-        finalMix = './wav_files/mixed_audio.wav'
+        finalMix = os.path.join(outDir, 'mixed_audio.wav')
         for k,v in analysisJson.items():
             if k == 'sections':
                 for section in analysisJson[k]:
@@ -109,7 +112,7 @@ class AudioAnalyzer:
 
     def findFittingFiller(self, desiredDuration=0):
 
-        pathToFillers = './wav_files/filler/'
+        pathToFillers = './static/wav_files/filler/'
         fillers = self.play.getListOfFillers(pathToFillerDir=pathToFillers)
         selectedFile = None
         findRandom = True

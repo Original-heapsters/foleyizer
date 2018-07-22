@@ -20,7 +20,7 @@ class Player:
 
     def playRandom(self, pathToFillerDir=None):
         if pathToFillerDir is not None and pathToFillerDir != '':
-            fillers = self.getListOfFillers()
+            fillers = self.getListOfFillers(pathToFillerDir)
             selectedFile = random.choice(fillers)
             self.playWav(pathToWav=selectedFile)
             return selectedFile
