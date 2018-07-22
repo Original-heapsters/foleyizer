@@ -31,9 +31,9 @@ class Spectogram:
     def fileDuration(self, mySound, samplingFreq):
 
         if mySound.any():
-            print('dura')
             print(mySound.shape[0])
             signalDuration = float(mySound.shape[0])/samplingFreq
+            print('Signal Duration')
             print(signalDuration)
             return signalDuration
 
@@ -65,44 +65,6 @@ class Spectogram:
 
 
 
-    def freqCont(self, mySound, mySoundOneChannel):
-       if mySound and mySoundOneChannel:
-            mySoundLength = len(mySound)
-            fftArray = fft(mySoundOneChannel)
-            numUniquePoints = numpy.ceil((mySoundLength + 1) / 2.0)
-            fftArray = fftArray[0:numUniquePoints]
-            fftArray = abs(fftArray)
-            fftArray = fftArray / float(mySoundLength)
-            fftArray = fftArray **2
-            if mySoundLength % 2 > 0: #we've got odd number of points in fft
-                fftArray[1:len(fftArray)] = fftArray[1:len(fftArray)] * 2
-
-            else: #We've got even number of points in fft
-                fftArray[1:len(fftArray) -1] = fftArray[1:len(fftArray) -1] * 2
-
-            freqArray = numpy.arange(0, numUniquePoints, 1.0) * (samplingFreq / mySoundLength);
-            return freqArray
-
-    def plotFreq(self, fftArray, freqArray):
-        if fftArray and freqArray:
-            #Plot the frequency
-            plt.plot(freqArray/1000, 10 * numpy.log10 (fftArray), color='B')
-            plt.xlabel('Frequency (Khz)')
-            plt.ylabel('Power (dB)')
-            lt.show()
-
-    def freqAr(self, freqArray):
-        if freqArray:
-            #Get List of element in frequency array
-            #print freqArray.dtype.type
-            freqArrayLength = len(freqArray)
-            print ("freqArrayLength =", freqArrayLength)
-            numpy.savetxt("freqData.txt", freqArray, fmt='%6.2f')
-
-            #Print FFtarray information
-            print ("fftArray length =", len(fftArray))
-            numpy.savetxt("fftData.txt", fftArray)
-
 
 
 if __name__ == '__main__':
@@ -116,5 +78,3 @@ if __name__ == '__main__':
     tone= path.plotTone(plotTime, chan)
 
 
-
-    print('Big booty hoes')
