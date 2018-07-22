@@ -1,5 +1,7 @@
 import os
+import wave
 import random
+import contextlib
 import simpleaudio as sa
 from pydub import AudioSegment as dub
 
@@ -43,6 +45,16 @@ class Player:
 
         else:
             return 0
+            
+    def getWavLength(self, pathToWav=None):
+        with contextlib.closing(wave.open(pathToWav,'r')) as f:
+           frames = f.getnframes()
+           rate = f.getframerate()
+           duration = frames / float(rate)
+           
+           return duration
+           
+        return 0
 
 
 if __name__ == '__main__':
@@ -63,10 +75,11 @@ if __name__ == '__main__':
             pathToFillers = './wav_files/filler/'
             play = Player(currentAudioPath=None)
             print('Playing test file')
-            play.playWav(pathToWav=pathToTestFile)
+            #play.playWav(pathToWav=pathToTestFile)
             print('Playing random filler file')
             selected = play.playRandom(pathToFillerDir=pathToFillers)
             print('Mixing audio')
             mixed = play.combineAudioFiles(src=pathToTestFile, filler=selected)
             print('Playing mixed audio')
             play.playWav(mixed)
+            print('Mixed audio duration is ' + str(play.getWavLength(mixed)))
