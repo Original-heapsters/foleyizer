@@ -60,8 +60,9 @@ def testPlayer():
     #Do foleyizing then redirect to finish page when complete, will show spectrogram and show foleyized audio player
     audioFillerDir = os.path.join(app.config['WAV_FOLDER'], 'filler')
 
-    randomFile = app.config['PLAYER'].playRandom(pathToFillerDir=audioFillerDir)
-    return render_template('player.html', random_audio=randomFile)
+    randomFile = app.config['PLAYER'].playRandom(pathToFillerDir=audioFillerDir, shouldPlay=False)
+    allFillers = app.config['PLAYER'].getListOfFillers(pathToFillerDir=audioFillerDir)
+    return render_template('player.html', random_audio=randomFile, fillerFiles=allFillers)
 
 @app.route('/testAudioAnalyzer')
 def testAudioAnalyzer():

@@ -18,11 +18,12 @@ class Player:
         else:
             return 'No audio path provided'
 
-    def playRandom(self, pathToFillerDir=None):
+    def playRandom(self, pathToFillerDir=None, shouldPlay=True):
         if pathToFillerDir is not None and pathToFillerDir != '':
             fillers = self.getListOfFillers(pathToFillerDir)
             selectedFile = random.choice(fillers)
-            self.playWav(pathToWav=selectedFile)
+            if shouldPlay:
+                self.playWav(pathToWav=selectedFile)
             return selectedFile
 
     def getListOfFillers(self, pathToFillerDir=None):
