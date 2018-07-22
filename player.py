@@ -20,40 +20,50 @@ class Player:
 
     def playRandom(self, pathToFillerDir=None):
         if pathToFillerDir is not None and pathToFillerDir != '':
+            fillers = self.getListOfFillers()
+            selectedFile = random.choice(fillers)
+            self.playWav(pathToWav=selectedFile)
+            return selectedFile
+
+    def getListOfFillers(self, pathToFillerDir=None):
+        if pathToFillerDir is not None and pathToFillerDir != '':
             files = []
             for file in os.listdir(pathToFillerDir):
                 if file.endswith(".wav"):
                     path = os.path.join(pathToFillerDir, file)
                     files.append(path)
-            selectedFile = random.choice(files)
-            self.playWav(pathToWav=selectedFile)
-            return selectedFile
+            return files
 
-    def combineAudioFiles(self, src=None, filler=None, offset=0):
-        if src and filler:
-            baseAudio = dub.from_wav(src)
-            fillerAudio = dub.from_wav(filler)
-
-            # mix sound2 with sound1, starting at 5000ms into sound1)
-            output = baseAudio.overlay(fillerAudio, position=offset)
+    def combineAudioFiles(self, src=None, fillersWithOffsets=[]):
+        if src and fillersWithOffsets:
+            baseAudio = dub.from_mp3(src)
+            intermediateAudio = None
+            for filler, offset in fillersWithOffsets:
+                fillerAudio = dub.from_mp3(filler)
+                if not intermediateAudio:
+                    intermediateAudio = baseAudio.overlay(fillerAudio, position=offset * 1000)
+                else:
+                    intermediateAudio = intermediateAudio.overlay(fillerAudio, position=offset * 1000)
 
             # save the result
             destination = './wav_files/mixed_audio.wav'
-            output.export(destination, format='wav')
+            if os.path.exists(destination):
+                os.remove(destination)
+            intermediateAudio.export(destination, format='wav')
 
             return destination
 
         else:
             return 0
-            
+
     def getWavLength(self, pathToWav=None):
         with contextlib.closing(wave.open(pathToWav,'r')) as f:
            frames = f.getnframes()
            rate = f.getframerate()
            duration = frames / float(rate)
-           
+
            return duration
-           
+
         return 0
 
 
