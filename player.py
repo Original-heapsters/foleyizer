@@ -1,6 +1,7 @@
 import os
 import random
 import simpleaudio as sa
+from pydub import AudioSegment as dub
 
 class Player:
     def __init__(self, currentAudioPath=None):
@@ -22,14 +23,50 @@ class Player:
                 if file.endswith(".wav"):
                     path = os.path.join(pathToFillerDir, file)
                     files.append(path)
-            self.playWav(pathToWav=random.choice(files))
+            selectedFile = random.choice(files)
+            self.playWav(pathToWav=selectedFile)
+            return selectedFile
+
+    def combineAudioFiles(self, src=None, filler=None, offset=0):
+        if src and filler:
+            baseAudio = dub.from_wav(src)
+            fillerAudio = dub.from_wav(filler)
+
+            # mix sound2 with sound1, starting at 5000ms into sound1)
+            output = baseAudio.overlay(fillerAudio, position=offset)
+
+            # save the result
+            destination = './wav_files/mixed_audio.wav'
+            output.export(destination, format='wav')
+
+            return destination
+
+        else:
+            return 0
 
 
 if __name__ == '__main__':
-    pathToTestFile = './wav_files/test.wav'
-    pathToFillers = './wav_files/filler/'
-    play = Player(currentAudioPath=None)
-    print('Playing test file')
-    play.playWav(pathToWav=pathToTestFile)
-    print('Playing random filler file')
-    play.playRandom(pathToFillerDir=pathToFillers)
+    import sys
+
+    print ('Number of arguments:', len(sys.argv), 'arguments.')
+    print ('Argument List:', str(sys.argv))
+    if len(sys.argv) > 1 :
+            print ("test")
+            pathToTestFile = sys.argv[1]
+            print (str(pathToTestFile))
+            play = Player(currentAudioPath=None)
+            play.playWav(pathToWav=pathToTestFile)
+
+    else:
+            print ("other test")
+            pathToTestFile = './wav_files/test.wav'
+            pathToFillers = './wav_files/filler/'
+            play = Player(currentAudioPath=None)
+            print('Playing test file')
+            play.playWav(pathToWav=pathToTestFile)
+            print('Playing random filler file')
+            selected = play.playRandom(pathToFillerDir=pathToFillers)
+            print('Mixing audio')
+            mixed = play.combineAudioFiles(src=pathToTestFile, filler=selected)
+            print('Playing mixed audio')
+            play.playWav(mixed)
