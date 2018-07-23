@@ -1,9 +1,11 @@
 import os
 from scripts.player import Player
 from scripts.AudioAnalyzer import AudioAnalyzer
+from scripts.spectrogram import Spectrogram
 from flask import Flask,render_template, url_for, flash, request, redirect
 from werkzeug.utils import secure_filename
 
+STATIC_FOLDER = './static'
 UPLOAD_FOLDER = './static/uploads'
 LOG_FOLDER = './static/logs'
 WAV_FOLDER = './static/wav_files'
@@ -11,12 +13,14 @@ SCRIPT_FOLDER = './scripts'
 ALLOWED_EXTENSIONS = set(['wav'])
 
 app = Flask(__name__)
+app.config['STATIC_FOLDER'] = STATIC_FOLDER
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['LOG_FOLDER'] = LOG_FOLDER
 app.config['WAV_FOLDER'] = WAV_FOLDER
 app.config['SCRIPT_FOLDER'] = SCRIPT_FOLDER
 app.config['PLAYER'] = Player()
 app.config['ANALYZER'] = AudioAnalyzer()
+app.config['SPECTROGRAM'] = Spectrogram()
 
 os.system('mkdir -p ' + app.config['LOG_FOLDER'])
 os.system('mkdir -p ' + app.config['UPLOAD_FOLDER'])
@@ -42,7 +46,7 @@ def upload():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('foleyizing', filename=filename))
+            return redirect(url_for('doTheWholeShebang', filename=filename))
         return render_template('upload.html')
     else:
         return render_template('upload.html')
@@ -71,6 +75,59 @@ def testAudioAnalyzer():
     mixed, original_audio = app.config['ANALYZER'].findDeadAreas(altPath=original, outDir=app.config['WAV_FOLDER'])
     return render_template('analysis.html', original_audio=original_audio, mixed_audio=mixed)
 
+@app.route('/testSpectrogram')
+def testSpectrogram():
+    #Do foleyizing then redirect to finish page when complete, will show spectrogram and show foleyized audio player
+    pathToWav = os.path.join(app.config['WAV_FOLDER'], 'badness.wav')
+    wav = app.config['SPECTROGRAM'].chooseWav(pathToWav)
+    sound, graph, points = app.config['SPECTROGRAM'].graphSetting(wav)
+    dura = app.config['SPECTROGRAM'].fileDuration(sound, graph)
+    chan = app.config['SPECTROGRAM'].soundChannel(sound)
+    plotTime = app.config['SPECTROGRAM'].plotTime(points,graph, chan)
+    plotOutput = os.path.join(app.config['STATIC_FOLDER'], 'plot.png')
+    spectrumPlot, json = app.config['SPECTROGRAM'].plotTone(plotTime, chan, outFile=plotOutput, showPlot=True, testAudio=pathToWav)
+    return render_template('spectrogram.html', spectrum=spectrumPlot, timing=json)
+
+@app.route('/doTheWholeShebang')
+def doTheWholeShebang():
+    if request.args.get('filename', None):
+        #Do foleyizing then redirect to finish page when complete, will show spectrogram and show foleyized audio player
+        pathToWav = os.path.join(app.config['UPLOAD_FOLDER'], request.args.get('filename', None))
+        wav = app.config['SPECTROGRAM'].chooseWav(pathToWav)
+        sound, graph, points = app.config['SPECTROGRAM'].graphSetting(wav)
+        dura = app.config['SPECTROGRAM'].fileDuration(sound, graph)
+        chan = app.config['SPECTROGRAM'].soundChannel(sound)
+        plotTime = app.config['SPECTROGRAM'].plotTime(points,graph, chan)
+        plotOutput = os.path.join(app.config['STATIC_FOLDER'], 'plot.png')
+        spectrumPlot, json = app.config['SPECTROGRAM'].plotTone(plotTime, chan, outFile=plotOutput, showPlot=False, testAudio=pathToWav)
+
+        mixedAudio, originalAudio = app.config['ANALYZER'].findDeadAreas(inputJson=json, outDir=app.config['WAV_FOLDER'])
+
+
+
+        wav = app.config['SPECTROGRAM'].chooseWav(mixedAudio)
+        sound, graph, points = app.config['SPECTROGRAM'].graphSetting(wav)
+        dura = app.config['SPECTROGRAM'].fileDuration(sound, graph)
+        chan = app.config['SPECTROGRAM'].soundChannel(sound)
+        plotTime = app.config['SPECTROGRAM'].plotTime(points,graph, chan)
+        plotOutput = os.path.join(app.config['STATIC_FOLDER'], 'mixplot.png')
+        mixPlot, json = app.config['SPECTROGRAM'].plotTone(plotTime, chan, outFile=plotOutput, showPlot=False, testAudio=mixedAudio)
+
+
+        print('mix at ' + mixedAudio + ' original at ' + originalAudio)
+        return render_template('enchilada.html', original_audio=originalAudio, mixed_audio=mixedAudio, spectrum=spectrumPlot, mixedPlot=mixPlot, timing=json)
+    else:
+        return 'No filename Param'
+
+@app.after_request
+def add_header(response):
+    """
+    Add headers to both force latest IE rendering engine or Chrome Frame,
+    and also to cache the rendered page for 10 minutes.
+    """
+    response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+    response.headers['Cache-Control'] = 'public, max-age=0'
+    return response
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

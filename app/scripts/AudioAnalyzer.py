@@ -96,13 +96,14 @@ class AudioAnalyzer:
                         fillerChosen, _ = self.findFittingFiller(desiredDuration=duration)
 
                         audioCombinationCommand += '-i ' + fillerChosen + ' '
-                        filterCommand += '[' + str(counter) + ']adelay=' + str(section['start']*1000) + '|' + str(section['start']*1000) + '[' + startingLetter + '];'
+                        filterCommand += '[' + str(counter) + ']adelay=' + str(section['start']) + '|' + str(section['start']) + '[' + startingLetter + '];'
                         allLetters += '[' + startingLetter + ']'
 
                         counter += 1
                         startingLetter = chr(ord(startingLetter) + 1)
 
         filterCommand += '[0]' + allLetters + 'amix=' + str(counter) + '\" -ar 44100 ' + finalMix
+        print(audioCombinationCommand + filterCommand)
         os.system(audioCombinationCommand + filterCommand)
 
         return finalMix, originalAudio

@@ -1,18 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
 <div>
-  <h2>Original audio</h2>
-  <audio controls>
-    <source src="{{original_audio}}" type="audio/wav">
-  Your browser does not support the audio element.
-  </audio>
+<img src="{{spectrum}}" alt="Spectrogram Plot">
 </div>
-<hr>
 <div>
-  <h2>Foleyized</h2>
-  <audio controls>
-    <source src="{{mixed_audio}}" type="audio/wav">
-  Your browser does not support the audio element.
-  </audio>
+  {{timing}}
 </div>
 {% endblock %}
