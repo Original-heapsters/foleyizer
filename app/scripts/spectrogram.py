@@ -4,7 +4,7 @@ import pylab
 from scipy.io import wavfile
 from scipy.fftpack import fft
 
-class Spectogram:
+class Spectrogram:
     def __init__(self):
         return
 
@@ -54,14 +54,62 @@ class Spectogram:
             timeArray = timeArray * 1000
             return timeArray
 
-    def plotTone(self, timeArray, mySoundOneChannel):
-        if timeArray.any() and mySoundOneChannel.any():
+    def plotTone(self, timeArray, amplitude, outFile='plot.png', showPlot=True, testAudio=None):
+        if timeArray.any() and amplitude.any():
             #Plot the tone
-            plt.plot(timeArray, mySoundOneChannel, color='G')
+            print('time array len - ' + str(len(timeArray)) + ' soundChannel len - ' + str(len(amplitude)))
+            plt.plot(timeArray, amplitude, color='G')
+            threshold = 0.48242188
+            durationThreshold = 2000.0
+            outJSON = {
+            'path':testAudio
+            }
+            sections = []
+            deadSection = False
+            startTime = timeArray[0]
+            newSection = {}
+            print(max(amplitude))
+            print(min(amplitude))
+            for index in range(0,len(timeArray)):
+
+                if index == 0:
+                    # print('hit zero')
+                    newSection['isDead'] = deadSection
+                    newSection['start'] = timeArray[0]
+                else:
+                    if float(amplitude[index] * 1000000) < threshold:
+                        # print(str(float(amplitude[index])) + ' was less than ' + str(threshold))
+                        # print('hit violation')
+                        if deadSection == False and abs(newSection['start'] - timeArray[index]) > durationThreshold:
+                            # print('SWITCHED to being dead')
+                            newSection['end'] = timeArray[index]
+                            tmp = newSection
+                            sections.append(tmp)
+                            newSection = {}
+                            deadSection = True
+                            newSection['start'] = timeArray[index]
+                            newSection['isDead'] = deadSection
+                    else:
+                        # print(str(float(amplitude[index])) + ' was greater than ' + str(threshold))
+
+                        if deadSection == True and abs(newSection['start'] - timeArray[index]) > durationThreshold:
+                            # print('SWITCHED to being alive')
+                            newSection['end'] = timeArray[index]
+                            othertmp = newSection
+                            sections.append(othertmp)
+                            newSection = {}
+                            deadSection = False
+                            newSection['start'] = timeArray[index]
+                            newSection['isDead'] = deadSection
+            print(len(sections))
+
+            outJSON['sections'] = sections
             plt.xlabel('Time (ms)')
             plt.ylabel('Amplitude')
-            plt.savefig('plot.png', dpi=100)
-            plt.show()
+            plt.savefig(outFile, dpi=100)
+            if showPlot:
+                plt.show()
+            return outFile, outJSON
 
 
 
@@ -76,5 +124,3 @@ if __name__ == '__main__':
     chan = path.soundChannel(sound)
     plotTime = path.plotTime(points,graph, chan)
     tone= path.plotTone(plotTime, chan)
-
-
